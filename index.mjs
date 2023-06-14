@@ -1,6 +1,9 @@
 import { shuffle } from './js/utils.mjs';
 
-const maxPair =9;
+let backTimer;
+let flagFirst = true;
+let cardFisrst; 
+const maxPair = 9;
 const cardImage =[];
 
 // HTML のパース完了後まで initialize の実行を遅延させるための処理
@@ -35,6 +38,46 @@ function initialize() {
     }
 }
 
-function turn(){
+function turn(e){
+    const div =e.currentTarget;
     
+    if(backTimer) return;
+    
+    if(div.classList.contains('back')){
+        //裏向きのカードをクリックした場合
+        div.classList.remove('back');
+        div.appendChild(cardImage[div.dataset.index]);
+    }else{
+        //表向きのカードはreturn
+        return;
+    }
+
+    if(flagFirst){
+        //1枚目の処理
+        cardFisrst = div;
+        flagFirst = false;
+
+    }else{
+        //2枚目の処理
+        if(cardFisrst.dataset.number ==div.dataset.number){
+        //数字が1枚目と一致する場合
+        backTimer = setTimeout(function(){
+            div.classList.add('finish');
+            backTimer = NaN;
+        },500)
+         }else{
+        //一致しない場合
+        backTimer = setTimeout(function(){
+            div.classList.add('back');
+            div.innerHTML = '';
+            cardFisrst.classList.add('back');
+            cardFisrst.innerHTML = '';
+            cardFisrst = null;
+            backTimer = NaN;
+        
+        },500)
+        
+        }
+        flagFirst = true;
+    }
 }
